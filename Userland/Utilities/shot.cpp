@@ -95,6 +95,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     ByteString output_path;
     bool output_to_clipboard = false;
     unsigned delay = 0;
+    unsigned fps = 16;
     bool select_region = false;
     bool edit_image = false;
     int screen = -1;
@@ -102,6 +103,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     args_parser.add_positional_argument(output_path, "Output filename", "output", Core::ArgsParser::Required::No);
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
     args_parser.add_option(delay, "Seconds to wait before taking a screenshot", "delay", 'd', "seconds");
+    args_parser.add_option(fps, "Milliseconds between frames", "fps", 'm', "milliseconds");
     args_parser.add_option(screen, "The index of the screen (default: -1 for all screens)", "screen", 's', "index");
     args_parser.add_option(select_region, "Select a region to capture", "region", 'r');
     args_parser.add_option(edit_image, "Open in PixelPaint", "edit", 'e');
@@ -139,7 +141,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     int iterator = 0;
     for (iterator = 0; iterator < 30; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-        sleep(delay);
+        dbgln("pic");
+        sleep(0.1);
     }
     dbgln("got screenshots");
 
