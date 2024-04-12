@@ -139,11 +139,11 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     int iterator = 0;
     for (iterator = 0; iterator < 30; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-        sleep(delay)
+        sleep(delay);
     }
     dbgln("got screenshots");
 
-    RefPtr<Gfx::Bitmap> bitmap = shared_bitmap.bitmap();
+    RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[0].bitmap();
     if (!bitmap) {
         warnln("Failed to grab screenshot");
         return 1;
