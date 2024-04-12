@@ -96,24 +96,27 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     bool output_to_clipboard = false;
     unsigned delay = 0;
     unsigned fps = 60;
-    unsigned frames = 1;
+    unsigned seconds = 5;
     bool select_region = false;
     bool edit_image = false;
     int screen = -1;
+    unsigned frames;
 
     args_parser.add_positional_argument(output_path, "Output filename", "output", Core::ArgsParser::Required::No);
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
     args_parser.add_option(delay, "Seconds to wait before taking a screenshot", "delay", 'd', "seconds");
-    args_parser.add_option(fps, "Framerate", "fps", 'f', "milliseconds");
-    args_parser.add_option(frames, "Amount of time to record", "length", 'l', "frames");
+    args_parser.add_option(fps, "Framerate", "fps", 'f', "Fps");
+    args_parser.add_option(seconds, "Amount of time to record", "length", 's', "seconds");
     args_parser.add_option(screen, "The index of the screen (default: -1 for all screens)", "screen", 's', "index");
     args_parser.add_option(select_region, "Select a region to capture", "region", 'r');
     args_parser.add_option(edit_image, "Open in PixelPaint", "edit", 'e');
 
     args_parser.parse(arguments);
 
+    frames = seconds*fps;
+
     if (output_path.is_empty()) {
-        output_path = Core::DateTime::now().to_byte_string("screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
+        output_path = Core::DateTime::now().to_byte_string("screenshot-%Y-%m-%d-%H-%M-%S-%f.png"sv);
     }
 
     auto app = TRY(GUI::Application::create(arguments));
@@ -143,6 +146,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     unsigned iterator = 0;
     for (iterator = 0; iterator < frames; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
+        dbgln("captured frame");
         sleep(1/fps);
     }
     dbgln("got screenshots");
