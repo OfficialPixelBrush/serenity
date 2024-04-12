@@ -168,7 +168,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
 
         if (edit_image)
             output_path = Core::DateTime::now().to_byte_string("/tmp/screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
-
+            output_path = std::to_string(iterator) + output_path;
         auto file_or_error = Core::File::open(output_path, Core::File::OpenMode::Write);
         if (file_or_error.is_error()) {
             warnln("Could not open '{}' for writing: {}", output_path, file_or_error.error());
