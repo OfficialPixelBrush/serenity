@@ -145,7 +145,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     Optional<u32> screen_index;
     if (screen >= 0)
         screen_index = (u32)screen;
-    dbgln("Recording for {} frames", frames);
+    dbgln("Recording for {} frames, Frametime of {} seconds", frames, secondsForFrame);
     outln("Recording for {} frames", frames);
     Gfx::ShareableBitmap shared_bitmap[frames];
     unsigned iterator = 0;
