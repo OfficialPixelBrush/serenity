@@ -143,7 +143,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     }
     dbgln("got screenshots");
 
-    RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[0].bitmap();
+    RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[15].bitmap();
     if (!bitmap) {
         warnln("Failed to grab screenshot");
         return 1;
