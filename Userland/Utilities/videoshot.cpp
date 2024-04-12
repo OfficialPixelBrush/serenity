@@ -179,7 +179,6 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     if (edit_image)
         TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { output_path }));
 
-    /*
     bool printed_hyperlink = false;
     if (isatty(STDOUT_FILENO)) {
         auto full_path_or_error = FileSystem::real_path(output_path);
@@ -187,8 +186,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
             char hostname[HOST_NAME_MAX];
             VERIFY(gethostname(hostname, sizeof(hostname)) == 0);
 
-            auto url = URL::create_with_file_scheme(full_path_or_error.value(), {}, hostname);
-            out("\033]8;;{}\033\\", url.serialize());
+            //auto url = URL::create_with_file_scheme(full_path_or_error.value(), {}, hostname);
+            //out("\033]8;;{}\033\\", url.serialize());
             printed_hyperlink = true;
         }
     }
@@ -197,7 +196,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
 
     if (printed_hyperlink) {
         out("\033]8;;\033\\");
-    }*/
+    }
 
     outln("");
     return 0;
