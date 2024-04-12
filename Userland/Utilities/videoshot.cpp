@@ -179,6 +179,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     if (edit_image)
         TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { output_path }));
 
+    /*
     bool printed_hyperlink = false;
     if (isatty(STDOUT_FILENO)) {
         auto full_path_or_error = FileSystem::real_path(output_path);
@@ -196,7 +197,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
 
     if (printed_hyperlink) {
         out("\033]8;;\033\\");
-    }
+    }*/
 
     outln("");
     return 0;
