@@ -152,8 +152,14 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     dbgln("got screenshots");
 
     for (iterator = 0; iterator < frames; iterator++) {
-        ByteString iteratorString = iterator.to_byte_stream("%d"sv);
+        ByteString iteratorString = ByteString::formatted("{} little piggies", iterator);
         iteratorString = iteratorString.append(output_path);
+
+        StringBuilder builder;
+        builder.append(iteratorString);
+        builder.append(output_path);
+        ByteString final_output_path = builder.to_byte_string();
+
         RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[iterator].bitmap();
         if (!bitmap) {
             warnln("Failed to grab screenshot");
@@ -173,10 +179,10 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         auto encoded_bitmap = encoded_bitmap_or_error.release_value();
 
         if (edit_image)
-            output_path = Core::DateTime::now().to_byte_string("/tmp/screenshot-%Y-%m-%d-%H-%M-%S-%f.png"sv);
-        auto file_or_error = Core::File::open(iteratorString, Core::File::OpenMode::Write);
+            final_output_path = Core::DateTime::now().to_byte_string("/tmp/screenshot-%Y-%m-%d-%H-%M-%S-%f.png"sv);
+        auto file_or_error = Core::File::open(final_output_path, Core::File::OpenMode::Write);
         if (file_or_error.is_error()) {
-            warnln("Could not open '{}' for writing: {}", iteratorString, file_or_error.error());
+            warnln("Could not open '{}' for writing: {}", final_output_path, file_or_error.error());
             return 1;
         }
 
@@ -184,11 +190,11 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         TRY(file.write_until_depleted(encoded_bitmap.bytes()));
 
         if (edit_image)
-            TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { iteratorString }));
+            TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { final_output_path }));
 
         bool printed_hyperlink = false;
         if (isatty(STDOUT_FILENO)) {
-            auto full_path_or_error = FileSystem::real_path(iteratorString);
+            auto full_path_or_error = FileSystem::real_path(final_output_path);
             if (!full_path_or_error.is_error()) {
                 char hostname[HOST_NAME_MAX];
                 VERIFY(gethostname(hostname, sizeof(hostname)) == 0);
@@ -199,7 +205,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
             }
         }
 
-        out("{}", iteratorString);
+        out("{}", final_output_path);
 
         if (printed_hyperlink) {
             out("\033]8;;\033\\");
