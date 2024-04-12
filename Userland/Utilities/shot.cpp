@@ -96,6 +96,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     bool output_to_clipboard = false;
     unsigned delay = 0;
     unsigned fps = 16;
+    unsigned frames = 30;
     bool select_region = false;
     bool edit_image = false;
     int screen = -1;
@@ -104,6 +105,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
     args_parser.add_option(delay, "Seconds to wait before taking a screenshot", "delay", 'd', "seconds");
     args_parser.add_option(fps, "Milliseconds between frames", "fps", 'm', "milliseconds");
+    args_parser.add_option(length, "Amount of time to record", "frames", 'f', "frames");
     args_parser.add_option(screen, "The index of the screen (default: -1 for all screens)", "screen", 's', "index");
     args_parser.add_option(select_region, "Select a region to capture", "region", 'r');
     args_parser.add_option(edit_image, "Open in PixelPaint", "edit", 'e');
@@ -137,67 +139,68 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     if (screen >= 0)
         screen_index = (u32)screen;
     dbgln("getting screenshot...");
-    Gfx::ShareableBitmap shared_bitmap[30];
+    Gfx::ShareableBitmap shared_bitmap[frames];
     int iterator = 0;
-    for (iterator = 0; iterator < 30; iterator++) {
+    for (iterator = 0; iterator < frames; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-        dbgln("pic");
-        sleep(0.1);
+        sleep(fps/1000);
     }
     dbgln("got screenshots");
 
-    RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[15].bitmap();
-    if (!bitmap) {
-        warnln("Failed to grab screenshot");
-        return 1;
-    }
-
-    if (output_to_clipboard) {
-        GUI::Clipboard::the().set_bitmap(*bitmap);
-        return 0;
-    }
-
-    auto encoded_bitmap_or_error = Gfx::PNGWriter::encode(*bitmap);
-    if (encoded_bitmap_or_error.is_error()) {
-        warnln("Failed to encode PNG");
-        return 1;
-    }
-    auto encoded_bitmap = encoded_bitmap_or_error.release_value();
-
-    if (edit_image)
-        output_path = Core::DateTime::now().to_byte_string("/tmp/screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
-
-    auto file_or_error = Core::File::open(output_path, Core::File::OpenMode::Write);
-    if (file_or_error.is_error()) {
-        warnln("Could not open '{}' for writing: {}", output_path, file_or_error.error());
-        return 1;
-    }
-
-    auto& file = *file_or_error.value();
-    TRY(file.write_until_depleted(encoded_bitmap.bytes()));
-
-    if (edit_image)
-        TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { output_path }));
-
-    bool printed_hyperlink = false;
-    if (isatty(STDOUT_FILENO)) {
-        auto full_path_or_error = FileSystem::real_path(output_path);
-        if (!full_path_or_error.is_error()) {
-            char hostname[HOST_NAME_MAX];
-            VERIFY(gethostname(hostname, sizeof(hostname)) == 0);
-
-            auto url = URL::create_with_file_scheme(full_path_or_error.value(), {}, hostname);
-            out("\033]8;;{}\033\\", url.serialize());
-            printed_hyperlink = true;
+    for (iterator = 0; iterator < frames; iterator++) {
+        RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[iterator].bitmap();
+        if (!bitmap) {
+            warnln("Failed to grab screenshot");
+            return 1;
         }
+
+        if (output_to_clipboard) {
+            GUI::Clipboard::the().set_bitmap(*bitmap);
+            return 0;
+        }
+
+        auto encoded_bitmap_or_error = Gfx::PNGWriter::encode(*bitmap);
+        if (encoded_bitmap_or_error.is_error()) {
+            warnln("Failed to encode PNG");
+            return 1;
+        }
+        auto encoded_bitmap = encoded_bitmap_or_error.release_value();
+
+        if (edit_image)
+            output_path = Core::DateTime::now().to_byte_string("/tmp/screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
+
+        auto file_or_error = Core::File::open(output_path, Core::File::OpenMode::Write);
+        if (file_or_error.is_error()) {
+            warnln("Could not open '{}' for writing: {}", output_path, file_or_error.error());
+            return 1;
+        }
+
+        auto& file = *file_or_error.value();
+        TRY(file.write_until_depleted(encoded_bitmap.bytes()));
+
+        if (edit_image)
+            TRY(Core::Process::spawn("/bin/PixelPaint"sv, Array { output_path }));
+
+        bool printed_hyperlink = false;
+        if (isatty(STDOUT_FILENO)) {
+            auto full_path_or_error = FileSystem::real_path(output_path);
+            if (!full_path_or_error.is_error()) {
+                char hostname[HOST_NAME_MAX];
+                VERIFY(gethostname(hostname, sizeof(hostname)) == 0);
+
+                auto url = URL::create_with_file_scheme(full_path_or_error.value(), {}, hostname);
+                out("\033]8;;{}\033\\", url.serialize());
+                printed_hyperlink = true;
+            }
+        }
+
+        out("{}", output_path);
+
+        if (printed_hyperlink) {
+            out("\033]8;;\033\\");
+        }
+
+        outln("");
     }
-
-    out("{}", output_path);
-
-    if (printed_hyperlink) {
-        out("\033]8;;\033\\");
-    }
-
-    outln("");
     return 0;
 }
