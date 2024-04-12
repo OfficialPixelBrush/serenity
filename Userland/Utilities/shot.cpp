@@ -147,7 +147,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     for (iterator = 0; iterator < frames; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
         //dbgln("captured frame");
-        sleep(1/fps);
+        sleep(1.0f/(float)fps);
     }
     dbgln("captured");
 
