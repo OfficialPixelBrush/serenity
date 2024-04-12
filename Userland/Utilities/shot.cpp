@@ -125,7 +125,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         auto window = GUI::Window::construct();
         auto container = window->set_main_widget<SelectableLayover>(window);
 
-        window->set_title("shot");
+        window->set_title("vidshot");
         window->set_has_alpha_channel(true);
         window->set_fullscreen(true);
         window->show();
@@ -141,19 +141,20 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     Optional<u32> screen_index;
     if (screen >= 0)
         screen_index = (u32)screen;
-    dbgln("getting screenshot...");
+    dbgln("capturing...");
     Gfx::ShareableBitmap shared_bitmap[frames];
     unsigned iterator = 0;
     for (iterator = 0; iterator < frames; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-        dbgln("captured frame");
+        //dbgln("captured frame");
         sleep(1/fps);
     }
-    dbgln("got screenshots");
+    dbgln("captured");
 
+    // TODO: This is terrible. Saving individual Frames is BAD
     for (iterator = 0; iterator < frames; iterator++) {
-        ByteString iteratorString = ByteString::formatted("{} little piggies", iterator);
-        
+        ByteString iteratorString = ByteString::formatted("{}-", iterator);
+
         StringBuilder builder;
         builder.append(iteratorString);
         builder.append(output_path);
