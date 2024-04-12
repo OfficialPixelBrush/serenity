@@ -152,8 +152,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     dbgln("got screenshots");
 
     for (iterator = 0; iterator < frames; iterator++) {
-        ByteString iteratorString = iterator.to_byte_stream("%d");
-        iteratorString = AK::ByteString.join(iteratorString,output_path);
+        ByteString iteratorString = iterator.to_byte_stream("%d"sv);
+        iteratorString = iteratorString.append(output_path);
         RefPtr<Gfx::Bitmap> bitmap = shared_bitmap[iterator].bitmap();
         if (!bitmap) {
             warnln("Failed to grab screenshot");
