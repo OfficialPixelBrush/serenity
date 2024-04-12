@@ -101,6 +101,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     bool edit_image = false;
     int screen = -1;
     unsigned frames;
+    unsigned float secondsForFrame;
 
     args_parser.add_positional_argument(output_path, "Output filename", "output", Core::ArgsParser::Required::No);
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
@@ -114,6 +115,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     args_parser.parse(arguments);
 
     frames = seconds*fps;
+    secondsForFrame = 1.0f/((float)fps);
 
     if (output_path.is_empty()) {
         output_path = Core::DateTime::now().to_byte_string("screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
@@ -147,7 +149,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     for (iterator = 0; iterator < frames; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
         //dbgln("captured frame");
-        sleep(1.0f/(float)fps);
+        sleep(secondsForFrame);
     }
     dbgln("captured");
 
