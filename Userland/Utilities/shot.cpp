@@ -116,8 +116,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
 
     frames = seconds*fps;
     secondsForFrame = 1.0f/((float)fps);
-    dbgln("f: {}", frames)
-    dbgln("sf: {}", secondsForFrame)
+    dbgln("f: {}", frames);
+    dbgln("sf: {}", secondsForFrame);
 
     if (output_path.is_empty()) {
         output_path = Core::DateTime::now().to_byte_string("screenshot-%Y-%m-%d-%H-%M-%S.png"sv);
