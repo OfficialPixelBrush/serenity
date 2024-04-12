@@ -131,7 +131,6 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         }
     }
 
-    sleep(delay);
     Optional<u32> screen_index;
     if (screen >= 0)
         screen_index = (u32)screen;
@@ -140,6 +139,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     int iterator = 0;
     for (iterator = 0; iterator < 30; iterator++) {
         shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
+        sleep(delay)
     }
     dbgln("got screenshots");
 
