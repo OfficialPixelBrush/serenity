@@ -101,7 +101,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     bool edit_image = false;
     int screen = -1;
     unsigned frames;
-    unsigned float secondsForFrame;
+    float secondsForFrame;
 
     args_parser.add_positional_argument(output_path, "Output filename", "output", Core::ArgsParser::Required::No);
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
