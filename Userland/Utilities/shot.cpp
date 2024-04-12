@@ -145,7 +145,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     Optional<u32> screen_index;
     if (screen >= 0)
         screen_index = (u32)screen;
-    dbgln("capturing...");
+    dbgln("Recording...");
+    outln("Recording...");
     Gfx::ShareableBitmap shared_bitmap[frames];
     unsigned iterator = 0;
     for (iterator = 0; iterator < frames; iterator++) {
@@ -153,7 +154,8 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         //dbgln("captured frame");
         sleep(secondsForFrame);
     }
-    dbgln("captured");
+    outln("Recording finished.");
+    dbgln("Recording finished.");
 
     // TODO: This is terrible. Saving individual Frames is BAD
     for (iterator = 0; iterator < frames; iterator++) {
