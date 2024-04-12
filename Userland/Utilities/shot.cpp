@@ -23,6 +23,7 @@
 #include <LibMain/Main.h>
 #include <LibURL/URL.h>
 #include <unistd.h>
+#include <string>
 
 class SelectableLayover final : public GUI::Widget {
     C_OBJECT(SelectableLayover)
