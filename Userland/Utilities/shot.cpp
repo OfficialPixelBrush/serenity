@@ -153,8 +153,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
 
     for (iterator = 0; iterator < frames; iterator++) {
         ByteString iteratorString = ByteString::formatted("{} little piggies", iterator);
-        iteratorString = iteratorString.append(output_path);
-
+        
         StringBuilder builder;
         builder.append(iteratorString);
         builder.append(output_path);
