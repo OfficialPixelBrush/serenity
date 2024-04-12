@@ -106,7 +106,7 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     args_parser.add_option(output_to_clipboard, "Output to clipboard", "clipboard", 'c');
     args_parser.add_option(delay, "Seconds to wait before taking a screenshot", "delay", 'd', "seconds");
     args_parser.add_option(fps, "Framerate", "fps", 'f', "Fps");
-    args_parser.add_option(seconds, "Amount of time to record", "length", 's', "seconds");
+    args_parser.add_option(seconds, "Amount of time to record", "length", 'l', "seconds");
     args_parser.add_option(screen, "The index of the screen (default: -1 for all screens)", "screen", 's', "index");
     args_parser.add_option(select_region, "Select a region to capture", "region", 'r');
     args_parser.add_option(edit_image, "Open in PixelPaint", "edit", 'e');
