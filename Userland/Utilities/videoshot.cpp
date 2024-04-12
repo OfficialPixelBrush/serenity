@@ -132,16 +132,17 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
         }
     }
 
-    sleep(delay);
+    //sleep(delay);
     Optional<u32> screen_index;
     if (screen >= 0)
         screen_index = (u32)screen;
     dbgln("getting screenshot...");
     auto shared_bitmap = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-    Gfx::ShareableBitmap shared_bitmap_video[30] = { shared_bitmap };
+    Gfx::ShareableBitmap shared_bitmap_video[30];
     int iterator = 0;
     for (iterator = 0; iterator < 30; iterator++) {
         shared_bitmap_video[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
+        sleep(1);
     }
     dbgln("got screenshot");
 
