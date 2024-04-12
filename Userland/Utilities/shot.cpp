@@ -136,8 +136,12 @@ ErrorOr<int> serenity_main(Main::Arguments arguments)
     if (screen >= 0)
         screen_index = (u32)screen;
     dbgln("getting screenshot...");
-    char shared_bitmap = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
-    dbgln("got screenshot");
+    Gfx::ShareableBitmap shared_bitmap[30];
+    int iterator = 0;
+    for (iterator = 0; iterator < 30; iterator++) {
+        shared_bitmap[iterator] = GUI::ConnectionToWindowServer::the().get_screen_bitmap(crop_region, screen_index);
+    }
+    dbgln("got screenshots");
 
     RefPtr<Gfx::Bitmap> bitmap = shared_bitmap.bitmap();
     if (!bitmap) {
